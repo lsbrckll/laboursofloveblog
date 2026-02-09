@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Labours of Love - A Journal by L.R.C. Brickell</title>
+    <title>Notes in the Margins</title>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <style>
         * {
@@ -13,252 +13,580 @@
         }
 
         :root {
-            --old-paper: #f4e8d0;
-            --ink: #2d2520;
-            --faded-ink: #6b5d47;
-            --margin-ink: #8b7355;
-            --highlight: rgba(255, 235, 180, 0.4);
-            --highlight-border: rgba(212, 180, 100, 0.3);
+            --paper: #f6f1e9;
+            --ink: #2a2521;
+            --faded-ink: #6d6054;
+            --margin-ink: #8a7a66;
+            --rule: rgba(107, 93, 71, 0.15);
+            --highlight-bg: rgba(210, 180, 120, 0.25);
+            --highlight-bg-hover: rgba(210, 180, 120, 0.45);
+            --highlight-border: rgba(190, 160, 90, 0.4);
+            --highlight-border-hover: rgba(190, 160, 90, 0.7);
+        }
+
+        ::selection {
+            background: rgba(210, 180, 120, 0.35);
+            color: var(--ink);
+        }
+
+        ::-moz-selection {
+            background: rgba(210, 180, 120, 0.35);
+            color: var(--ink);
+        }
+
+        /* ── Custom scrollbar ── */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--paper);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(107, 93, 71, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(107, 93, 71, 0.35);
+        }
+
+        html {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(107, 93, 71, 0.2) var(--paper);
         }
 
         body {
             font-family: 'Lora', serif;
-            background: linear-gradient(to bottom, #f0e5ca, #f4e8d0);
+            background: var(--paper);
             color: var(--ink);
             line-height: 1.8;
             font-size: 17px;
             min-height: 100vh;
         }
 
+        /* ── Paper texture ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.028;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-size: 256px 256px;
+        }
+
+        /* ── Layout ── */
         .page {
-            max-width: 1400px;
+            max-width: 1360px;
             margin: 0 auto;
-            padding: 60px 30px 100px;
+            padding: 80px 40px 120px;
             display: grid;
-            grid-template-columns: 280px 1fr 340px;
-            gap: 60px;
+            grid-template-columns: 260px 1fr 320px;
+            gap: 70px;
             position: relative;
         }
 
-        /* Left about column */
+        /* ── Left column ── */
         .left-column {
             align-self: start;
+            position: sticky;
+            top: 80px;
         }
 
-        /* Main content */
+        .sidebar-card {
+            padding: 24px;
+            border-radius: 2px;
+            border: 1px solid var(--rule);
+        }
+
+        .sidebar-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            margin-bottom: 18px;
+            color: var(--margin-ink);
+        }
+
+        .sidebar-text {
+            font-family: 'Crimson Text', serif;
+            font-size: 0.92rem;
+            line-height: 1.75;
+            color: var(--faded-ink);
+        }
+
+        .sidebar-text p {
+            margin-bottom: 12px;
+        }
+
+        .sidebar-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ── Mobile about toggle (hidden on desktop) ── */
+        .mobile-about {
+            display: none;
+        }
+
+        .about-toggle {
+            font-family: 'Crimson Text', serif;
+            font-size: 0.85rem;
+            color: var(--margin-ink);
+            background: none;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 0;
+            transition: color 0.2s;
+        }
+
+        .about-toggle:hover {
+            color: var(--ink);
+        }
+
+        .about-toggle::after {
+            content: ' +';
+            font-size: 0.9em;
+        }
+
+        .about-toggle.open::after {
+            content: ' \2212';
+        }
+
+        .mobile-about-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .mobile-about-body.open {
+            max-height: 400px;
+            opacity: 1;
+        }
+
+        .mobile-about-text {
+            font-family: 'Crimson Text', serif;
+            font-size: 0.9rem;
+            line-height: 1.75;
+            color: var(--faded-ink);
+            padding-top: 16px;
+        }
+
+        .mobile-about-text p {
+            margin-bottom: 10px;
+        }
+
+        .mobile-about-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ── Sidebar index ── */
+        .sidebar-index {
+            margin-top: 28px;
+        }
+
+        .index-item {
+            display: block;
+            font-family: 'Crimson Text', serif;
+            font-size: 0.88rem;
+            color: var(--faded-ink);
+            text-decoration: none;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--rule);
+            transition: color 0.2s;
+            line-height: 1.45;
+        }
+
+        .index-item:first-child {
+            border-top: 1px solid var(--rule);
+        }
+
+        .index-item:hover {
+            color: var(--ink);
+        }
+
+        .index-item .index-num {
+            font-weight: 600;
+            color: var(--margin-ink);
+            margin-right: 6px;
+            font-size: 0.82rem;
+        }
+
+        .index-item.active {
+            color: var(--ink);
+        }
+
+        /* ── Right column ── */
+        .right-column {
+            position: relative;
+        }
+
+        /* ── Currently reading indicator ── */
+        .reading-indicator {
+            position: sticky;
+            top: 80px;
+            font-family: 'Crimson Text', serif;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .reading-indicator.visible {
+            opacity: 1;
+        }
+
+        .reading-indicator-label {
+            font-size: 0.75rem;
+            color: var(--margin-ink);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .reading-indicator-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1rem;
+            color: var(--ink);
+            line-height: 1.45;
+            margin-bottom: 8px;
+        }
+
+        .reading-indicator-meta {
+            font-size: 0.78rem;
+            color: var(--margin-ink);
+            font-style: italic;
+        }
+
+        .reading-indicator-progress {
+            margin-top: 14px;
+            height: 1px;
+            background: var(--rule);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reading-indicator-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--margin-ink);
+            transition: width 0.15s linear;
+        }
+
+        /* ── Main content ── */
         .main-content {
-            max-width: 650px;
+            max-width: 640px;
+            position: relative;
         }
 
-        /* Header */
+        /* ── Header ── */
         header {
-            margin-bottom: 70px;
-            padding-bottom: 35px;
-            border-bottom: 2px solid var(--ink);
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--ink);
         }
 
         .site-title {
             font-family: 'Libre Baskerville', serif;
-            font-size: 2.5rem;
+            font-size: 2.6rem;
             font-weight: 400;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
+            line-height: 1.2;
         }
 
         .site-subtitle {
             font-family: 'Crimson Text', serif;
-            font-size: 1.1rem;
-            color: var(--ink);
-            margin-bottom: 6px;
+            font-size: 1.05rem;
+            color: var(--faded-ink);
             letter-spacing: 0.3px;
             font-style: italic;
         }
 
-        .author-name {
-            font-family: 'Crimson Text', serif;
-            font-size: 0.95rem;
-            color: var(--faded-ink);
-            letter-spacing: 0.3px;
-        }
-
-        /* About section styling */
-        .about-section {
-            background: rgba(255, 255, 255, 0.3);
-            padding: 28px;
-            border-radius: 3px;
-            border: 1px solid rgba(107, 93, 71, 0.2);
-            margin-bottom: 30px;
-        }
-
-        /* Contact section styling */
-        .contact-section {
-            background: rgba(255, 255, 255, 0.3);
-            padding: 28px;
-            border-radius: 3px;
-            border: 1px solid rgba(107, 93, 71, 0.2);
-            margin-bottom: 30px;
-        }
-
-        .contact-title {
-            font-family: 'Libre Baskerville', serif;
-            font-size: 0.9rem;
-            font-weight: 400;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 16px;
-            color: var(--ink);
-        }
-
-        .contact-text {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: var(--faded-ink);
-        }
-
-        .contact-email {
-            color: var(--ink);
-            text-decoration: none;
-            border-bottom: 1px solid var(--margin-ink);
-            transition: border-color 0.2s;
-        }
-
-        .contact-email:hover {
-            border-bottom-color: var(--ink);
-        }
-
-        /* Newsletter coming soon section */
-        .newsletter-section {
-            background: rgba(255, 255, 255, 0.3);
-            padding: 28px;
-            border-radius: 3px;
-            border: 1px solid rgba(107, 93, 71, 0.2);
-        }
-
-        .about-title {
-            font-family: 'Libre Baskerville', serif;
-            font-size: 0.9rem;
-            font-weight: 400;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 16px;
-            color: var(--ink);
-        }
-
-        .about-text {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: var(--faded-ink);
-        }
-
-        .about-text p {
-            margin-bottom: 14px;
-        }
-
-        .about-text p:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Entries */
+        /* ── Entries ── */
         .entry {
-            margin-bottom: 100px;
+            margin-bottom: 0;
+            padding: 60px 0;
             position: relative;
             scroll-margin-top: 60px;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .entry:last-child {
+            border-bottom: none;
         }
 
         .entry-meta {
             font-family: 'Crimson Text', serif;
-            font-size: 0.85rem;
-            color: var(--faded-ink);
-            margin-bottom: 18px;
-            letter-spacing: 0.5px;
-            font-weight: 600;
+            font-size: 0.82rem;
+            color: var(--margin-ink);
+            margin-bottom: 14px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            display: inline-block;
+            border-bottom: 1px solid var(--rule);
+            padding-bottom: 3px;
         }
+
+
 
         .entry-title {
             font-family: 'Libre Baskerville', serif;
-            font-size: 1.7rem;
+            font-size: 1.55rem;
             font-weight: 400;
-            margin-bottom: 28px;
-            line-height: 1.4;
-            letter-spacing: 0.3px;
+            margin-bottom: 26px;
+            line-height: 1.45;
+            letter-spacing: 0.2px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .entry-title::before {
+            content: '\00a7';
+            position: absolute;
+            left: -1.4em;
+            opacity: 0;
+            color: var(--margin-ink);
+            font-size: 0.85em;
+            transition: opacity 0.25s ease;
+        }
+
+        .entry-title:hover::before {
+            opacity: 0.45;
+        }
+
+        .link-tooltip {
+            position: absolute;
+            left: 0;
+            top: 100%;
+            margin-top: 2px;
+            font-family: 'Crimson Text', serif;
+            font-size: 0.78rem;
+            color: var(--margin-ink);
+            letter-spacing: 0.5px;
+            font-style: italic;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .link-tooltip.show {
+            opacity: 1;
+        }
+
+        /* Mobile: fixed toast at bottom of viewport */
+        .link-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 32px;
+            transform: translateX(-50%);
+            font-family: 'Crimson Text', serif;
+            font-size: 0.82rem;
+            letter-spacing: 0.5px;
+            font-style: italic;
+            color: var(--paper);
+            background: var(--ink);
+            padding: 8px 22px;
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 10001;
+        }
+
+        .link-toast.show {
+            opacity: 1;
         }
 
         .entry-body {
-            font-size: 1.05rem;
-            line-height: 1.9;
+            font-size: 1.02rem;
+            line-height: 1.95;
         }
 
         .entry-body p {
-            margin-bottom: 1.6em;
+            margin-bottom: 1.5em;
         }
 
-        /* Improved highlighting - more obvious */
+        .entry-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ── Drop caps ── */
+        .entry-body > p:first-child::first-letter {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 3.4em;
+            float: left;
+            line-height: 0.78;
+            padding-right: 8px;
+            padding-top: 5px;
+            color: var(--ink);
+        }
+
+        /* ── Annotations ── */
         .annotated {
-            background: linear-gradient(to bottom, 
-                transparent 0%, 
-                transparent 15%, 
-                rgba(255, 235, 180, 0.6) 15%, 
-                rgba(255, 235, 180, 0.6) 90%, 
-                transparent 90%
-            );
-            padding: 0 4px;
+            background: var(--highlight-bg);
+            padding: 1px 3px;
+            border-bottom: 1.5px solid var(--highlight-border);
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
             position: relative;
-            border-bottom: 2px solid rgba(255, 200, 100, 0.5);
-            transition: all 0.2s ease;
         }
 
         .annotated:hover {
-            background: linear-gradient(to bottom, 
-                transparent 0%, 
-                transparent 15%, 
-                rgba(255, 235, 180, 0.8) 15%, 
-                rgba(255, 235, 180, 0.8) 90%, 
-                transparent 90%
-            );
-            border-bottom-color: rgba(255, 200, 100, 0.8);
+            background: var(--highlight-bg-hover);
+            border-bottom-color: var(--highlight-border-hover);
         }
 
-        /* Marginalia */
+        /* ── Popup tooltip (for mobile / click) ── */
+        .note-popup {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            background: var(--paper);
+            border: 1px solid var(--rule);
+            border-radius: 3px;
+            padding: 14px 16px;
+            box-shadow: 0 4px 20px rgba(42, 37, 33, 0.1);
+            font-family: 'Crimson Text', serif;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: var(--faded-ink);
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            transform: translateX(-50%) translateY(4px);
+        }
+
+        .note-popup.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Arrow pointing down from popup */
+        .note-popup::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--paper);
+        }
+
+        .note-popup::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 7px solid transparent;
+            border-top-color: var(--rule);
+        }
+
+        .note-popup-label {
+            font-weight: 600;
+            color: var(--margin-ink);
+            margin-bottom: 4px;
+            font-size: 0.78rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .note-popup a {
+            color: var(--margin-ink);
+            text-decoration: none;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        /* Flip popup below if near top of viewport */
+        .note-popup.below {
+            bottom: auto;
+            top: calc(100% + 10px);
+            transform: translateX(-50%) translateY(-4px);
+        }
+
+        .note-popup.below.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .note-popup.below::after {
+            top: auto;
+            bottom: 100%;
+            border-top-color: transparent;
+            border-bottom-color: var(--paper);
+        }
+
+        .note-popup.below::before {
+            top: auto;
+            bottom: 100%;
+            border-top-color: transparent;
+            border-bottom-color: var(--rule);
+        }
+
+        /* ── Margin notes (desktop) ── */
         .margin-note {
             font-family: 'Crimson Text', serif;
-            font-size: 0.95rem;
-            line-height: 1.7;
+            font-size: 0.88rem;
+            line-height: 1.65;
             color: var(--faded-ink);
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
+            padding: 14px 0 14px 18px;
+            border-left: 2px solid var(--rule);
             position: absolute;
-            right: -400px;
-            width: 320px;
+            right: -390px;
+            width: 300px;
+            opacity: 0;
+            transform: translateX(6px);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            pointer-events: none;
+        }
+
+        .margin-note.visible {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
         }
 
         .margin-note-label {
             font-weight: 600;
-            color: var(--ink);
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-            font-family: 'Libre Baskerville', serif;
-            letter-spacing: 0.5px;
+            color: var(--margin-ink);
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+            font-family: 'Crimson Text', serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .margin-note a {
             color: var(--margin-ink);
-            text-decoration: underline;
+            text-decoration: none;
+            border-bottom: 1px solid var(--rule);
+            transition: border-color 0.2s;
         }
 
-        /* Container for marginalia in right column */
-        .marginalia-column {
-            position: relative;
+        .margin-note a:hover {
+            border-bottom-color: var(--ink);
         }
 
-        /* Blockquotes for quoted text */
+        /* ── Blockquotes ── */
         blockquote {
             margin: 2em 0;
             padding: 0 0 0 24px;
-            border-left: 3px solid var(--margin-ink);
+            border-left: 2px solid var(--margin-ink);
             color: var(--faded-ink);
             font-style: italic;
-            position: relative;
         }
 
         blockquote p {
@@ -269,184 +597,556 @@
             margin-bottom: 0;
         }
 
-        blockquote::before {
-            content: '"';
-            font-family: 'Libre Baskerville', serif;
-            font-size: 3rem;
-            color: rgba(212, 197, 160, 0.4);
-            position: absolute;
-            left: -12px;
-            top: -10px;
-            line-height: 1;
+        /* ── Entry number ── */
+        .entry-number {
+            font-family: 'Crimson Text', serif;
+            font-size: 0.82rem;
+            color: var(--margin-ink);
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-right: 8px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* ── Reading progress ── */
+        .reading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--highlight-border), var(--margin-ink));
+            z-index: 10000;
+            transition: width 0.08s linear;
+            pointer-events: none;
         }
 
-        .entry {
-            animation: fadeIn 0.5s ease-out;
+        .site-footer {
+            padding-top: 40px;
+            font-family: 'Crimson Text', serif;
+            font-size: 0.85rem;
+            color: var(--margin-ink);
+            font-style: italic;
         }
 
-        /* Responsive */
-        @media (max-width: 1100px) {
+        /* ── Responsive ── */
+        @media (max-width: 1200px) {
             .page {
                 grid-template-columns: 1fr;
+                max-width: 640px;
                 gap: 0;
-            }
-            
-            .left-column {
-                position: static;
-                margin-bottom: 40px;
+                padding: 50px 28px 80px;
             }
 
+            .left-column {
+                display: none;
+            }
+
+            .mobile-about {
+                display: block;
+                margin-top: 18px;
+            }
+
+            .right-column {
+                display: none;
+            }
+
+            /* On mobile/tablet, margin notes are hidden — popups replace them */
             .margin-note {
-                position: static;
-                width: 100%;
-                margin-top: 20px;
-                margin-bottom: 20px;
+                display: none;
+            }
+
+            header {
+                margin-bottom: 50px;
+                padding-bottom: 30px;
+            }
+
+            .entry-title::before {
+                display: none;
             }
         }
 
-        @media (max-width: 800px) {
+        @media (max-width: 600px) {
             .page {
-                padding: 50px 25px;
+                padding: 36px 20px 60px;
+            }
+
+            .site-title {
+                font-size: 1.9rem;
+            }
+
+            .site-subtitle {
+                font-size: 0.95rem;
+            }
+
+            .entry-title {
+                font-size: 1.3rem;
+            }
+
+            .entry {
+                padding: 36px 0;
+            }
+
+            .entry-body {
+                font-size: 0.98rem;
+            }
+
+            .entry-body > p:first-child::first-letter {
+                font-size: 2.8em;
+                padding-right: 6px;
+                padding-top: 4px;
+            }
+
+            .note-popup {
+                width: 240px;
+                font-size: 0.85rem;
+                padding: 12px 14px;
+            }
+        }
+
+        /* ── Print ── */
+        @media print {
+            body {
+                font-size: 12pt;
+                background: white;
+                color: black;
+            }
+
+            body::before {
+                display: none;
+            }
+
+            .reading-progress,
+            .left-column,
+            .right-column,
+            .mobile-about,
+            .margin-note {
+                display: none !important;
+            }
+
+            .page {
+                display: block;
+                max-width: none;
+                padding: 0;
+            }
+
+            .main-content {
+                max-width: none;
+            }
+
+            header {
+                margin-bottom: 2em;
+                padding-bottom: 1em;
+            }
+
+            .site-title {
+                font-size: 1.8rem;
+            }
+
+            .entry {
+                page-break-inside: avoid;
+                padding: 2em 0;
+            }
+
+            .entry-title {
+                cursor: default;
+            }
+
+            .entry-title::before {
+                display: none;
+            }
+
+            .annotated {
+                background: none;
+                border-bottom: none;
+                cursor: default;
+            }
+
+            .note-popup {
+                display: none;
+            }
+
+            a[href^="#"] {
+                color: inherit;
+                text-decoration: none;
+                border-bottom: none;
+            }
+
+            .site-footer {
+                font-size: 0.8rem;
+                border-top: 1px solid #ccc;
+                padding-top: 1em;
             }
         }
     </style>
 </head>
 <body>
+    <div class="reading-progress" id="readingProgress"></div>
     <div class="page">
-        <!-- Left column: About -->
+        <!-- Left column (desktop only) -->
         <aside class="left-column">
-            <div class="about-section">
-                <h3 class="about-title">About</h3>
-                <div class="about-text">
-                    <p>The journal of a 17-year-old student, with three aims:</p>
-                    <p>(1) To learn as much as he can about what it means to be human.</p>
-                    <p>(2) To learn as much as he can about himself, and his life, in how he thinks about questions. Think of these entries as little "essays"—originally a "test" (in French) of how we respond to a subject.</p>
-                    <p>(3) To offer something useful and interesting to fellow travellers, eager to explore our existence.</p>
-                    <p>Now more than ever, thinking is becoming a rare thing. If you wonder about things and want to learn, you're welcome here.</p>
+            <div class="sidebar-card">
+                <h3 class="sidebar-title">About</h3>
+                <div class="sidebar-text">
+                    <p>The journal of a seventeen-year-old student, with three aims:</p>
+                    <p>To learn what it means to be human. To test himself against questions he's still figuring out. To offer something to fellow travellers.</p>
+                    <p>Think of these entries as little essays&mdash;from the French <em>essai</em>, a trial, a test of how one responds to a subject.</p>
+                    <p>If you wonder about things and want to learn, you are welcome here.</p>
                 </div>
             </div>
-
-            <div class="contact-section">
-                <h3 class="contact-title">Contact</h3>
-                <div class="contact-text">
-                    <p>Questions, thoughts, or just want to say hello?</p>
-                    <p><a href="mailto:laboursofloveblog@gmail.com" class="contact-email">laboursofloveblog@gmail.com</a></p>
-                </div>
-            </div>
+            <nav class="sidebar-index" id="sidebarIndex">
+                <a href="#entry-1" class="index-item"><span class="index-num">#4</span> On the performance of being</a>
+                <a href="#entry-2" class="index-item"><span class="index-num">#3</span> The narrative cage</a>
+                <a href="#entry-3" class="index-item"><span class="index-num">#2</span> The question as dwelling</a>
+                <a href="#entry-4" class="index-item"><span class="index-num">#1</span> Conversational topology</a>
+            </nav>
         </aside>
 
         <!-- Main content -->
         <main class="main-content">
             <header>
-                <h1 class="site-title">Labours of Love</h1>
-                <div class="site-subtitle">A Journal by L.R.C. Brickell</div>
+                <h1 class="site-title">Notes in the Margins</h1>
+                <div class="site-subtitle">A journal of small essays on large things</div>
+                <!-- Mobile about: collapsible, lives under the header -->
+                <div class="mobile-about">
+                    <button class="about-toggle" id="aboutToggle">About this journal</button>
+                    <div class="mobile-about-body" id="aboutBody">
+                        <div class="mobile-about-text">
+                            <p>The journal of a seventeen-year-old student, with three aims:</p>
+                            <p>To learn what it means to be human. To test himself against questions he's still figuring out. To offer something to fellow travellers.</p>
+                            <p>Think of these entries as little essays&mdash;from the French <em>essai</em>, a trial, a test of how one responds to a subject.</p>
+                            <p>If you wonder about things and want to learn, you are welcome here.</p>
+                        </div>
+                    </div>
+                </div>
             </header>
 
             <article class="entry" data-date="2026-02-08" id="entry-1">
-                <div class="entry-meta">8 February 2026</div>
+                <div class="entry-meta"><span class="entry-number">#4</span> 8 February 2026</div>
                 <h2 class="entry-title">On the performance of being</h2>
                 <div class="entry-body">
                     <p>
-                        Consider the strange recursion at the heart of <span class="annotated" data-margin="margin-1">authenticity</span>. The moment one becomes conscious of being authentic, one is already performing authenticity—and thus the very object of pursuit recedes. This morning I observed myself editing not my reaction to an event, but the anticipated retelling of that reaction. Does this secondary processing corrupt the primary experience, or reveal that all experience is always already mediated by narrative?
+                        Consider the strange recursion at the heart of <span class="annotated" data-margin="margin-1">authenticity</span>. The moment one becomes conscious of being authentic, one is already performing authenticity&mdash;and thus the very object of pursuit recedes. This morning I observed myself editing not my reaction to an event, but the anticipated retelling of that reaction. Does this secondary processing corrupt the primary experience, or reveal that all experience is always already mediated by narrative?
                     </p>
                     <p>
                         Perhaps there is no pre-narrative self to access. Perhaps the search for authenticity is itself the performance, a recursive loop that generates the very thing it seeks to escape. The <span class="annotated" data-margin="margin-2">authentic self as a horizon</span> that retreats with each step toward it.
                     </p>
                 </div>
                 <div class="margin-note" id="margin-1">
-                    <div class="margin-note-label">authenticity:</div>
-                    The observer effect in consciousness—can we think about thinking without changing the thought? cf. Heisenberg, but for the mind
+                    <div class="margin-note-label">Authenticity</div>
+                    The observer effect in consciousness&mdash;can we think about thinking without changing the thought? cf. Heisenberg, but for the mind.
                 </div>
                 <div class="margin-note" id="margin-2">
-                    <div class="margin-note-label">horizon:</div>
-                    Always receding, never reached—like Zeno's paradox of motion
+                    <div class="margin-note-label">Horizon</div>
+                    Always receding, never reached&mdash;like Zeno's paradox of motion.
                 </div>
             </article>
 
             <article class="entry" data-date="2026-02-05" id="entry-2">
-                <div class="entry-meta">5 February 2026</div>
+                <div class="entry-meta"><span class="entry-number">#3</span> 5 February 2026</div>
                 <h2 class="entry-title">The narrative cage</h2>
                 <div class="entry-body">
                     <p>
-                        Watched someone I have known for years behave exactly as I predicted they would. The accurate prediction should have validated my understanding, yet it produced only unease. Why? Because I realized I had long ago stopped seeing them—I was merely consulting my <span class="annotated" data-margin="margin-3">compressed file</span> on them, a narrative summary that substituted for observation.
+                        Watched someone I have known for years behave exactly as I predicted they would. The accurate prediction should have validated my understanding, yet it produced only unease. Why? Because I realized I had long ago stopped seeing them&mdash;I was merely consulting my <span class="annotated" data-margin="margin-3">compressed file</span> on them, a narrative summary that substituted for observation.
                     </p>
                     <p>
                         We trap people in our stories about them. This might be necessary; holding the full complexity of another consciousness in mind may be cognitively impossible. But that doesn't make it less violent. Intimacy as necessary reduction. Understanding as a form of flattening. We mistake our maps for territories and call it knowledge.
                     </p>
                 </div>
                 <div class="margin-note" id="margin-3">
-                    <div class="margin-note-label">compressed file:</div>
-                    Is memory a recording or a reconstruction? See <a href="#entry-3">31 Jan entry</a> on ambiguity
+                    <div class="margin-note-label">Compressed file</div>
+                    Is memory a recording or a reconstruction? See <a href="#entry-3">31 Jan entry</a> on ambiguity.
                 </div>
             </article>
 
             <article class="entry" data-date="2026-01-31" id="entry-3">
-                <div class="entry-meta">31 January 2026</div>
+                <div class="entry-meta"><span class="entry-number">#2</span> 31 January 2026</div>
                 <h2 class="entry-title">The question as dwelling</h2>
                 <div class="entry-body">
                     <p>
-                        Some questions do not want answers. They want to be inhabited, lived with, returned to. I once thought this was intellectual cowardice—that every question deserved resolution. Now I suspect the opposite: that demanding resolution of fundamentally <span class="annotated" data-margin="margin-4">ambiguous questions</span> is where meaning dies.
+                        Some questions do not want answers. They want to be inhabited, lived with, returned to. I once thought this was intellectual cowardice&mdash;that every question deserved resolution. Now I suspect the opposite: that demanding resolution of fundamentally <span class="annotated" data-margin="margin-4">ambiguous questions</span> is where meaning dies.
                     </p>
                     <p>
-                        Human experience may be structurally ambiguous. The question mark not as placeholder awaiting replacement by a period, but as the architecture of the thing itself. Consider: "What is the meaning of life?" versus "How shall I live meaningfully with uncertainty?" The first demands an answer that will end inquiry. The second invites a practice that sustains it.
+                        Human experience may be structurally ambiguous. The question mark not as placeholder awaiting replacement by a period, but as the architecture of the thing itself. Consider: &ldquo;What is the meaning of life?&rdquo; versus &ldquo;How shall I live meaningfully with uncertainty?&rdquo; The first demands an answer that will end inquiry. The second invites a practice that sustains it.
                     </p>
                 </div>
                 <div class="margin-note" id="margin-4">
-                    <div class="margin-note-label">ambiguous questions:</div>
-                    Contrast with Descartes' method of doubt—he wanted certainty, not dwelling
+                    <div class="margin-note-label">Ambiguous questions</div>
+                    Contrast with Descartes' method of doubt&mdash;he wanted certainty, not dwelling.
                 </div>
             </article>
 
             <article class="entry" data-date="2026-01-28" id="entry-4">
-                <div class="entry-meta">28 January 2026</div>
+                <div class="entry-meta"><span class="entry-number">#1</span> 28 January 2026</div>
                 <h2 class="entry-title">Conversational topology</h2>
                 <div class="entry-body">
                     <p>
-                        Every dialogue is a negotiation over attention's finite resource. The interruption, the redirect, the "that reminds me"—each a bid in an <span class="annotated" data-margin="margin-5">economy of relevance</span>. What fascinates is how rarely we acknowledge the negotiation. We pretend the conversation follows organic interest while it actually traces the collision of competing claims to conversational space.
+                        Every dialogue is a negotiation over attention's finite resource. The interruption, the redirect, the &ldquo;that reminds me&rdquo;&mdash;each a bid in an <span class="annotated" data-margin="margin-5">economy of relevance</span>. What fascinates is how rarely we acknowledge the negotiation. We pretend the conversation follows organic interest while it actually traces the collision of competing claims to conversational space.
                     </p>
                     <p>
                         This is not malice. It is geometry. Two minds, one linear thread. The friction is structural. Yet we take it personally, as if the redirect were rejection rather than the inevitable cost of sharing attention. Perhaps all communication is controlled collision, and what we call understanding is finding a rhythm in the chaos.
                     </p>
                 </div>
                 <div class="margin-note" id="margin-5">
-                    <div class="margin-note-label">economy of relevance:</div>
+                    <div class="margin-note-label">Economy of relevance</div>
                     This applies to written exchanges too. What am I not saying here?
                 </div>
             </article>
+
+            <div class="site-footer">
+                &copy; 2026 Notes in the Margins
+            </div>
         </main>
+
+        <!-- Right column -->
+        <div class="right-column">
+            <div class="reading-indicator" id="readingIndicator">
+                <div class="reading-indicator-label">Currently reading</div>
+                <div class="reading-indicator-title" id="indicatorTitle"></div>
+                <div class="reading-indicator-progress">
+                    <div class="reading-indicator-bar" id="indicatorBar"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <script data-goatcounter="https://laboursoflove.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+
     <script>
-        // Position margin notes alongside their highlighted text
+        const isMobile = () => window.innerWidth <= 1200;
+        let activePopup = null;
+        let popupTimer = null;
+
+        // ── Position margin notes (desktop) ──
         function positionMarginNotes() {
-            if (window.innerWidth <= 1100) return;
-            
-            const annotated = document.querySelectorAll('.annotated');
-            
-            annotated.forEach(span => {
-                const marginId = span.dataset.margin;
-                const marginNote = document.getElementById(marginId);
-                
-                if (marginNote) {
-                    const spanRect = span.getBoundingClientRect();
-                    const entry = span.closest('.entry');
-                    const entryRect = entry.getBoundingClientRect();
-                    
-                    const relativeTop = spanRect.top - entryRect.top;
-                    marginNote.style.top = `${relativeTop - 5}px`;
+            if (isMobile()) return;
+
+            document.querySelectorAll('.annotated').forEach(span => {
+                const note = document.getElementById(span.dataset.margin);
+                if (!note) return;
+
+                const entry = span.closest('.entry');
+                const spanRect = span.getBoundingClientRect();
+                const entryRect = entry.getBoundingClientRect();
+                note.style.top = `${spanRect.top - entryRect.top}px`;
+            });
+        }
+
+        // ── Close any open popup ──
+        function closeActivePopup() {
+            if (popupTimer) { clearTimeout(popupTimer); popupTimer = null; }
+            if (activePopup) {
+                activePopup.classList.remove('show');
+                setTimeout(() => {
+                    if (activePopup && !activePopup.classList.contains('show')) {
+                        activePopup.remove();
+                    }
+                    activePopup = null;
+                }, 250);
+            }
+        }
+
+        // ── Create and show a popup for an annotated span ──
+        function showPopup(span) {
+            closeActivePopup();
+
+            const marginId = span.dataset.margin;
+            const note = document.getElementById(marginId);
+            if (!note) return;
+
+            const label = note.querySelector('.margin-note-label');
+            const labelText = label ? label.textContent : '';
+            // Get the note text content without the label
+            const noteClone = note.cloneNode(true);
+            const cloneLabel = noteClone.querySelector('.margin-note-label');
+            if (cloneLabel) cloneLabel.remove();
+            const noteText = noteClone.innerHTML.trim();
+
+            const popup = document.createElement('div');
+            popup.className = 'note-popup';
+            popup.innerHTML = `<div class="note-popup-label">${labelText}</div>${noteText}`;
+
+            span.style.position = 'relative';
+            span.appendChild(popup);
+
+            // Check if popup would be cut off at top
+            const spanRect = span.getBoundingClientRect();
+            if (spanRect.top < 300) {
+                popup.classList.add('below');
+            }
+
+            // Trigger show
+            requestAnimationFrame(() => {
+                popup.classList.add('show');
+            });
+
+            activePopup = popup;
+
+            // Auto-dismiss after 5 seconds on mobile
+            if (popupTimer) clearTimeout(popupTimer);
+            popupTimer = setTimeout(() => {
+                if (activePopup === popup) closeActivePopup();
+            }, 5000);
+        }
+
+        // ── Margin note hover (desktop) ──
+        function initDesktopHover() {
+            document.querySelectorAll('.annotated').forEach(span => {
+                const note = document.getElementById(span.dataset.margin);
+                if (!note) return;
+
+                span.addEventListener('mouseenter', () => {
+                    if (isMobile()) return;
+                    note.classList.add('visible');
+                });
+
+                span.addEventListener('mouseleave', () => {
+                    if (isMobile()) return;
+                    setTimeout(() => {
+                        if (!note.matches(':hover')) note.classList.remove('visible');
+                    }, 120);
+                });
+
+                note.addEventListener('mouseleave', () => note.classList.remove('visible'));
+            });
+        }
+
+        // ── Click handler for annotations (mobile only) ──
+        function initAnnotationClicks() {
+            document.querySelectorAll('.annotated').forEach(span => {
+                span.addEventListener('click', (e) => {
+                    if (!isMobile()) return; // Desktop uses margin note hover instead
+                    e.stopPropagation();
+
+                    // If this span already has the active popup, close it
+                    if (activePopup && span.contains(activePopup)) {
+                        closeActivePopup();
+                        return;
+                    }
+
+                    showPopup(span);
+                });
+            });
+
+            // Close popup when clicking elsewhere
+            document.addEventListener('click', (e) => {
+                if (activePopup && !e.target.closest('.note-popup') && !e.target.closest('.annotated')) {
+                    closeActivePopup();
                 }
             });
         }
 
-        // Initialize
-        window.addEventListener('load', positionMarginNotes);
+        // ── About toggle (mobile) ──
+        document.getElementById('aboutToggle').addEventListener('click', () => {
+            const toggle = document.getElementById('aboutToggle');
+            const body = document.getElementById('aboutBody');
+            toggle.classList.toggle('open');
+            body.classList.toggle('open');
+        });
+
+        // ── Reading progress ──
+        function updateProgress() {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            document.getElementById('readingProgress').style.width = `${progress}%`;
+        }
+
+        // ── Shareable entry links ──
+        function initShareableLinks() {
+            document.querySelectorAll('.entry-title').forEach(title => {
+                const entry = title.closest('.entry');
+                if (!entry || !entry.id) return;
+
+                title.addEventListener('click', () => {
+                    const url = `${window.location.origin}${window.location.pathname}#${entry.id}`;
+                    navigator.clipboard.writeText(url).then(() => {
+                        if (isMobile()) {
+                            // Mobile: fixed toast at bottom of viewport
+                            let toast = document.getElementById('copy-toast');
+                            if (!toast) {
+                                toast = document.createElement('span');
+                                toast.id = 'copy-toast';
+                                toast.className = 'link-toast';
+                                toast.textContent = 'link copied';
+                                document.body.appendChild(toast);
+                            }
+                            toast.classList.add('show');
+                            setTimeout(() => toast.classList.remove('show'), 1800);
+                        } else {
+                            // Desktop: subtle tooltip in left margin
+                            let tooltip = title.querySelector('.link-tooltip');
+                            if (!tooltip) {
+                                tooltip = document.createElement('span');
+                                tooltip.className = 'link-tooltip';
+                                tooltip.textContent = 'link copied';
+                                title.appendChild(tooltip);
+                            }
+                            tooltip.classList.add('show');
+                            setTimeout(() => tooltip.classList.remove('show'), 1800);
+                        }
+                    });
+                    history.replaceState(null, '', `#${entry.id}`);
+                });
+            });
+        }
+
+        // ── Currently reading indicator + sidebar index active state ──
+        function updateReadingIndicator() {
+            if (isMobile()) return;
+
+            const entries = document.querySelectorAll('.entry');
+            const indicator = document.getElementById('readingIndicator');
+            const indicatorTitle = document.getElementById('indicatorTitle');
+            const indicatorBar = document.getElementById('indicatorBar');
+            const indexItems = document.querySelectorAll('.index-item');
+
+            let currentEntry = null;
+            let entryProgress = 0;
+
+            entries.forEach((entry, i) => {
+                const rect = entry.getBoundingClientRect();
+                const vh = window.innerHeight;
+                // Entry is "current" if its top is above the middle of the viewport
+                if (rect.top < vh * 0.4 && rect.bottom > 0) {
+                    currentEntry = entry;
+                    const totalHeight = rect.height;
+                    const scrolledInto = Math.max(0, vh * 0.4 - rect.top);
+                    entryProgress = Math.min(100, (scrolledInto / totalHeight) * 100);
+                }
+            });
+
+            if (currentEntry) {
+                indicator.classList.add('visible');
+                const title = currentEntry.querySelector('.entry-title');
+                indicatorTitle.textContent = title ? title.textContent : '';
+                indicatorBar.style.width = `${entryProgress}%`;
+
+                // Update sidebar index active state
+                indexItems.forEach(item => {
+                    item.classList.toggle('active',
+                        item.getAttribute('href') === `#${currentEntry.id}`);
+                });
+            } else {
+                indicator.classList.remove('visible');
+                indexItems.forEach(item => item.classList.remove('active'));
+            }
+        }
+
+        // ── Init ──
+        window.addEventListener('load', () => {
+            positionMarginNotes();
+            initDesktopHover();
+            initAnnotationClicks();
+            initShareableLinks();
+            updateReadingIndicator();
+        });
         window.addEventListener('resize', positionMarginNotes);
-        window.addEventListener('scroll', positionMarginNotes);
+        window.addEventListener('scroll', () => {
+            positionMarginNotes();
+            updateProgress();
+            updateReadingIndicator();
+        }, { passive: true });
     </script>
 </body>
 </html>
