@@ -268,6 +268,20 @@
             font-style: italic;
         }
 
+        .visitor-count {
+            font-family: 'Crimson Text', serif;
+            font-size: 0.78rem;
+            color: var(--margin-ink);
+            margin-top: 8px;
+            letter-spacing: 0.3px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .visitor-count.loaded {
+            opacity: 1;
+        }
+
         /* ── Entries ── */
         .entry {
             margin-bottom: 0;
@@ -758,6 +772,7 @@
             <header>
                 <h1 class="site-title">Notes in the Margins</h1>
                 <div class="site-subtitle">A journal of small essays on large things</div>
+                <div class="visitor-count" id="visitorCount"></div>
                 <!-- Mobile about: collapsible, lives under the header -->
                 <div class="mobile-about">
                     <button class="about-toggle" id="aboutToggle">About this journal</button>
@@ -1076,6 +1091,24 @@
             }
         }
 
+        // ── Visitor count ──
+        function loadVisitorCount() {
+            const el = document.getElementById('visitorCount');
+            try {
+                const r = new XMLHttpRequest();
+                r.open('GET', 'https://laboursoflove.goatcounter.com/counter/' + encodeURIComponent('/') + '.json');
+                r.onload = function() {
+                    if (r.status === 200) {
+                        const data = JSON.parse(r.responseText);
+                        const count = data.count.replace(/\s/g, '');
+                        el.textContent = count + ' readers have visited this journal';
+                        el.classList.add('loaded');
+                    }
+                };
+                r.send();
+            } catch(e) { /* fail silently */ }
+        }
+
         // ── Init ──
         window.addEventListener('load', () => {
             positionMarginNotes();
@@ -1083,6 +1116,7 @@
             initAnnotationClicks();
             initShareableLinks();
             updateReadingIndicator();
+            loadVisitorCount();
         });
         window.addEventListener('resize', positionMarginNotes);
         window.addEventListener('scroll', () => {
