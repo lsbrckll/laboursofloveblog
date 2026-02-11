@@ -849,7 +849,7 @@
                         Still, there must be attempts, even if I&rsquo;m struggling to think of them because I haven&rsquo;t read enough. One example is Joyce&rsquo;s novel <em>Ulysses</em>, a favourite of mine. His young artist character, Stephen Dedalus, experiences moments of <span class="annotated" data-margin="margin-3">epiphany</span>&mdash;&ldquo;a sudden spiritual manifestation, whether in the vulgarity of speech or of gesture or in a memorable phase of the mind itself&rdquo;&mdash;that echo Huxley&rsquo;s insights into reality. But I think that Joyce goes further, and teaches his audience to experience these epiphanies themselves.
                     </p>
                     <p>
-                        The 732-page novel chronicles ordinary people going about an ordinary day in Dublin. Nothing remarkable happens&mdash;Joyce devotes pages to a character&rsquo;s thoughts as he sits on the toilet, for example&mdash;but his presentation is extraordinary. Behind every chapter, there lie dozens of references to episodes from Homer&rsquo;s <em>Odyssey</em>, the most grand of narratives. His language does the same: when narrating a woman giving birth, he uses 32 parodies of prose styles, tracing the embryonic development of English from pagan incantations through great writers like Milton and Dickens to 19th century street slang. He&rsquo;s telling us, I think, that our lives are things of wonder, worthy of admiration&mdash;not even in the everyday, but especially in the everyday.
+                        The 732-page novel chronicles ordinary people going about an ordinary day in Dublin. Nothing remarkable happens&mdash;Joyce devotes pages to a character&rsquo;s thoughts as he sits on the toilet, for example&mdash;but his presentation is extraordinary. Behind every chapter, there lie dozens of references to episodes from Homer&rsquo;s <em>Odyssey</em>, the most grand of narratives. His language does the same: when narrating a woman giving birth, he uses 32 parodies of prose styles, tracing the embryonic development of English from pagan incantations through great writers like Milton and Dickens to 19th century street slang. He&rsquo;s telling us, I think, that our lives are things of wonder, worthy of admiration&mdash;not <em>even</em> in the everyday, but <em>especially</em> in the everyday.
                     </p>
                     <p>
                         Joyce&rsquo;s appreciation differs from Huxley&rsquo;s, and at first the comparison seems odd: Huxley marvels at the existence of objects; Joyce at the richness of human experience. But both encourage us to take a step back and observe, and both suggest that what we dismiss as &ldquo;mere things&rdquo; or mundane moments might be all we really have.
@@ -1119,31 +1119,16 @@
         // ── Visitor count ──
         function loadVisitorCount() {
             const el = document.getElementById('visitorCount');
-            // Wait for GoatCounter script to load, then use its built-in counter
-            var check = setInterval(function() {
-                if (window.goatcounter && window.goatcounter.visit_count) {
-                    clearInterval(check);
-                    window.goatcounter.visit_count({
-                        append: false,
-                        type: 'json',
-                        no_branding: true,
-                        path: 'all',
-                        cb: function(data) {
-                            try {
-                                var count = data.count || '0';
-                                count = count.replace(/\s/g, '');
-                                var n = parseInt(count);
-                                if (n >= 0) {
-                                    el.textContent = (n === 0 ? 'Welcome, first reader' : count + ' readers have visited this journal');
-                                    el.classList.add('loaded');
-                                }
-                            } catch(e) { /* fail silently */ }
-                        }
-                    });
-                }
-            }, 100);
-            // Stop checking after 5 seconds
-            setTimeout(function() { clearInterval(check); }, 5000);
+            fetch('https://laboursoflove.goatcounter.com/counter/TOTAL.json')
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    var count = data.count || '0';
+                    count = count.replace(/\s/g, '');
+                    var n = parseInt(count);
+                    el.textContent = (n === 0 ? 'Welcome, first reader' : count + ' readers have visited this journal');
+                    el.classList.add('loaded');
+                })
+                .catch(function() { /* fail silently */ });
         }
 
         // ── Init ──
