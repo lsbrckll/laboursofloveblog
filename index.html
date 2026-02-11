@@ -1125,7 +1125,7 @@
                     var count = data.count || '0';
                     count = count.replace(/\s/g, '');
                     var n = parseInt(count);
-                    el.textContent = (n === 0 ? 'Welcome, first reader' : count + ' readers have visited this journal');
+                    el.textContent = (n === 0 ? 'Welcome, first visitor' : 'This journal has been visited ' + count + ' times');
                     el.classList.add('loaded');
                 })
                 .catch(function() { /* fail silently */ });
