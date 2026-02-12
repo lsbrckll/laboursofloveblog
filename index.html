@@ -128,7 +128,27 @@
         }
 
         /* ── Subscribe ── */
-        .subscribe-card { margin-top: 24px; }
+        .subscribe-card {
+            margin-top: 24px;
+            position: relative;
+        }
+        .subscribe-card::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 2px;
+            border: 1.5px solid transparent;
+            background: conic-gradient(from var(--shine-angle, 0deg), transparent 330deg, rgba(190, 155, 70, 0.6) 345deg, rgba(210, 175, 90, 0.8) 350deg, rgba(190, 155, 70, 0.6) 355deg, transparent 360deg) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            animation: border-shine 4s linear infinite;
+            pointer-events: none;
+        }
+        .subscribe-card.clicked::after {
+            display: none;
+        }
         .subscribe-form { margin-top: 14px; }
         .subscribe-input {
             display: block; width: 100%;
@@ -150,6 +170,15 @@
             transition: color 0.25s ease, border-color 0.25s ease;
         }
         .subscribe-button:hover { color: var(--ink); border-color: var(--margin-ink); }
+        @keyframes border-shine {
+            0% { --shine-angle: 0deg; }
+            100% { --shine-angle: 360deg; }
+        }
+        @property --shine-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
         .subscribe-status {
             font-family: 'Crimson Text', serif; font-size: 0.82rem;
             margin-top: 10px; color: var(--margin-ink); font-style: italic;
@@ -1218,6 +1247,10 @@
                     // Show success immediately — the data is already sent
                     input.value = '';
                     status.textContent = 'Thank you for subscribing.';
+                    // Stop the shine on all subscribe cards
+                    document.querySelectorAll('.subscribe-card').forEach(function(c) {
+                        c.classList.add('clicked');
+                    });
                 });
             });
         }
