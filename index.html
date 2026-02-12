@@ -127,6 +127,37 @@
             margin-bottom: 0;
         }
 
+        /* ── Subscribe ── */
+        .subscribe-card { margin-top: 24px; }
+        .subscribe-form { margin-top: 14px; }
+        .subscribe-input {
+            display: block; width: 100%;
+            font-family: 'Crimson Text', serif; font-size: 0.9rem;
+            color: var(--ink); background: transparent;
+            border: 1px solid var(--rule); border-radius: 2px;
+            padding: 10px 12px; outline: none;
+            transition: border-color 0.25s ease; box-sizing: border-box;
+        }
+        .subscribe-input::placeholder { color: var(--margin-ink); opacity: 0.6; }
+        .subscribe-input:focus { border-color: var(--margin-ink); }
+        .subscribe-button {
+            display: block; width: 100%; margin-top: 10px;
+            font-family: 'Crimson Text', serif; font-size: 0.8rem;
+            font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
+            color: var(--faded-ink); background: transparent;
+            border: 1px solid var(--rule); border-radius: 2px;
+            padding: 9px 16px; cursor: pointer;
+            transition: color 0.25s ease, border-color 0.25s ease;
+        }
+        .subscribe-button:hover { color: var(--ink); border-color: var(--margin-ink); }
+        .subscribe-status {
+            font-family: 'Crimson Text', serif; font-size: 0.82rem;
+            margin-top: 10px; color: var(--margin-ink); font-style: italic;
+        }
+        .subscribe-status:empty { display: none; }
+        .subscribe-status.error { color: #a0522d; }
+        .mobile-subscribe { display: none; }
+
         /* ── Mobile about toggle (hidden on desktop) ── */
         .mobile-about {
             display: none;
@@ -665,6 +696,16 @@
             .entry-title::before {
                 display: none;
             }
+
+            .mobile-subscribe {
+                display: block; margin-top: 16px;
+                padding-top: 16px; border-top: 1px solid var(--rule);
+            }
+            .mobile-subscribe-row { display: flex; gap: 10px; }
+            .mobile-subscribe-row .subscribe-input { flex: 1; min-width: 0; }
+            .mobile-subscribe-row .subscribe-button {
+                margin-top: 0; width: auto; white-space: nowrap; padding: 10px 18px;
+            }
         }
 
         @media (max-width: 600px) {
@@ -721,7 +762,9 @@
             .left-column,
             .right-column,
             .mobile-about,
-            .margin-note {
+            .margin-note,
+            .subscribe-card,
+            .mobile-subscribe {
                 display: none !important;
             }
 
@@ -795,6 +838,16 @@
                     <p>If you wonder about things and want to learn, you are welcome here.</p>
                 </div>
             </div>
+            <div class="sidebar-card subscribe-card">
+                <h3 class="sidebar-title">Subscribe</h3>
+                <div class="sidebar-text"><p>Receive new entries by email.</p></div>
+                <form action="https://script.google.com/macros/s/AKfycbxJvo5KRws3AwMVlBmfd1wQeC0OzbFF1ajCmAXyg0bhyBdsiy8uW1-N03ONG1X6H0TpbQ/exec" method="POST" class="subscribe-form">
+                    <input type="email" name="Email" placeholder="your@email.com"
+                           required class="subscribe-input" aria-label="Email address">
+                    <button type="submit" class="subscribe-button">Subscribe</button>
+                    <div class="subscribe-status" aria-live="polite"></div>
+                </form>
+            </div>
         </aside>
 
         <!-- Main content -->
@@ -813,6 +866,16 @@
                             <p>Think of these entries as little essays&mdash;from the French <em>essai</em>, a trial, a test of how one responds to a subject.</p>
                             <p>If you wonder about things and want to learn, you are welcome here.</p>
                         </div>
+                    </div>
+                    <div class="mobile-subscribe">
+                        <form action="https://script.google.com/macros/s/AKfycbxJvo5KRws3AwMVlBmfd1wQeC0OzbFF1ajCmAXyg0bhyBdsiy8uW1-N03ONG1X6H0TpbQ/exec" method="POST" class="subscribe-form">
+                            <div class="mobile-subscribe-row">
+                                <input type="email" name="Email" placeholder="your@email.com"
+                                       required class="subscribe-input" aria-label="Email address">
+                                <button type="submit" class="subscribe-button">Subscribe</button>
+                            </div>
+                            <div class="subscribe-status" aria-live="polite"></div>
+                        </form>
                     </div>
                 </div>
             </header>
@@ -1131,6 +1194,43 @@
                 .catch(function() { /* fail silently */ });
         }
 
+        // ── Subscribe form ──
+        function initSubscribeForms() {
+            document.querySelectorAll('.subscribe-form').forEach(function(form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    var input = form.querySelector('.subscribe-input');
+                    var button = form.querySelector('.subscribe-button');
+                    var status = form.querySelector('.subscribe-status');
+                    if (!input.value.trim()) return;
+                    input.disabled = true;
+                    button.disabled = true;
+                    button.textContent = '...';
+                    status.textContent = '';
+                    status.className = 'subscribe-status';
+                    fetch(form.action, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'Email=' + encodeURIComponent(input.value.trim())
+                    })
+                    .then(function() {
+                        status.textContent = 'Thank you for subscribing.';
+                        input.value = '';
+                    })
+                    .catch(function() {
+                        status.textContent = 'Something went wrong. Please try again.';
+                        status.className = 'subscribe-status error';
+                    })
+                    .finally(function() {
+                        input.disabled = false;
+                        button.disabled = false;
+                        button.textContent = 'Subscribe';
+                    });
+                });
+            });
+        }
+
         // ── Init ──
         window.addEventListener('load', () => {
             positionMarginNotes();
@@ -1139,6 +1239,7 @@
             initShareableLinks();
             updateReadingIndicator();
             loadVisitorCount();
+            initSubscribeForms();
         });
         window.addEventListener('resize', positionMarginNotes);
         window.addEventListener('scroll', () => {
