@@ -1203,9 +1203,6 @@
                     var button = form.querySelector('.subscribe-button');
                     var status = form.querySelector('.subscribe-status');
                     if (!input.value.trim()) return;
-                    input.disabled = true;
-                    button.disabled = true;
-                    button.textContent = '...';
                     status.textContent = '';
                     status.className = 'subscribe-status';
                     // Use hidden iframe to handle Google's redirect
@@ -1223,6 +1220,10 @@
                         setTimeout(function() { iframe.remove(); }, 1000);
                     });
                     form.submit();
+                    // Disable after submit so the data is included
+                    input.disabled = true;
+                    button.disabled = true;
+                    button.textContent = '...';
                 });
             });
         }
