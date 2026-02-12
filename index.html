@@ -1212,18 +1212,12 @@
                     document.body.appendChild(iframe);
                     form.target = 'subscribe-frame';
                     iframe.addEventListener('load', function() {
-                        status.textContent = 'Thank you for subscribing.';
-                        input.value = '';
-                        input.disabled = false;
-                        button.disabled = false;
-                        button.textContent = 'Subscribe';
                         setTimeout(function() { iframe.remove(); }, 1000);
                     });
                     form.submit();
-                    // Disable after submit so the data is included
-                    input.disabled = true;
-                    button.disabled = true;
-                    button.textContent = '...';
+                    // Show success immediately — the data is already sent
+                    input.value = '';
+                    status.textContent = 'Thank you for subscribing.';
                 });
             });
         }
