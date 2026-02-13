@@ -127,35 +127,101 @@
             margin-bottom: 0;
         }
 
-        /* ── Subscribe ── */
+        /* ── Subscribe card (sidebar, always visible) ── */
         .subscribe-card {
             margin-top: 24px;
-            position: relative;
         }
-        .subscribe-card::after {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: 2px;
-            border: 1.5px solid transparent;
-            background: conic-gradient(from var(--shine-angle, 0deg), transparent 330deg, rgba(190, 155, 70, 0.6) 345deg, rgba(210, 175, 90, 0.8) 350deg, rgba(190, 155, 70, 0.6) 355deg, transparent 360deg) border-box;
-            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-            mask-composite: exclude;
-            animation: border-shine 4s linear infinite;
+
+        /* ── Subscribe popup overlay ── */
+        .subscribe-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(42, 37, 33, 0);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            transition: background 0.8s ease;
+        }
+        .subscribe-overlay.visible {
+            background: rgba(42, 37, 33, 0.35);
+            pointer-events: auto;
+        }
+        .subscribe-overlay.hiding {
+            background: rgba(42, 37, 33, 0);
             pointer-events: none;
         }
-        .subscribe-card.clicked::after {
-            display: none;
+        .subscribe-popup {
+            background: var(--paper);
+            border: 1px solid var(--rule);
+            border-radius: 3px;
+            padding: 36px 40px;
+            max-width: 380px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 8px 40px rgba(42, 37, 33, 0.15);
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
         }
-        .subscribe-form { margin-top: 14px; }
+        .subscribe-overlay.visible .subscribe-popup {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .subscribe-overlay.hiding .subscribe-popup {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+        .subscribe-popup-close {
+            position: absolute;
+            top: 12px; right: 16px;
+            background: none; border: none;
+            font-family: 'Crimson Text', serif;
+            font-size: 1.3rem;
+            color: var(--margin-ink);
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px;
+            transition: color 0.2s ease;
+        }
+        .subscribe-popup-close:hover { color: var(--ink); }
+        .subscribe-popup-title {
+            font-family: 'Crimson Text', serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--margin-ink);
+            margin-bottom: 12px;
+        }
+        .subscribe-popup-text {
+            font-family: 'Crimson Text', serif;
+            font-size: 0.95rem;
+            color: var(--faded-ink);
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        /* ── Mobile subscribe (below about toggle) ── */
+        .mobile-subscribe {
+            display: none;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--rule);
+        }
+        .mobile-subscribe-row { display: flex; gap: 10px; }
+        .mobile-subscribe-row .subscribe-input { flex: 1; min-width: 0; }
+        .mobile-subscribe-row .subscribe-button {
+            margin-top: 0; width: auto; white-space: nowrap; padding: 10px 18px;
+        }
+        .subscribe-form { margin-top: 0; }
         .subscribe-input {
             display: block; width: 100%;
-            font-family: 'Crimson Text', serif; font-size: 0.9rem;
+            font-family: 'Crimson Text', serif; font-size: 0.95rem;
             color: var(--ink); background: transparent;
             border: 1px solid var(--rule); border-radius: 2px;
-            padding: 10px 12px; outline: none;
+            padding: 11px 14px; outline: none;
             transition: border-color 0.25s ease; box-sizing: border-box;
         }
         .subscribe-input::placeholder { color: var(--margin-ink); opacity: 0.6; }
@@ -166,26 +232,16 @@
             font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
             color: var(--faded-ink); background: transparent;
             border: 1px solid var(--rule); border-radius: 2px;
-            padding: 9px 16px; cursor: pointer;
+            padding: 10px 16px; cursor: pointer;
             transition: color 0.25s ease, border-color 0.25s ease;
         }
         .subscribe-button:hover { color: var(--ink); border-color: var(--margin-ink); }
-        @keyframes border-shine {
-            0% { --shine-angle: 0deg; }
-            100% { --shine-angle: 360deg; }
-        }
-        @property --shine-angle {
-            syntax: '<angle>';
-            initial-value: 0deg;
-            inherits: false;
-        }
         .subscribe-status {
             font-family: 'Crimson Text', serif; font-size: 0.82rem;
             margin-top: 10px; color: var(--margin-ink); font-style: italic;
         }
         .subscribe-status:empty { display: none; }
         .subscribe-status.error { color: #a0522d; }
-        .mobile-subscribe { display: none; }
 
         /* ── Mobile about toggle (hidden on desktop) ── */
         .mobile-about {
@@ -708,6 +764,10 @@
                 margin-top: 18px;
             }
 
+            .mobile-subscribe {
+                display: block;
+            }
+
             .right-column {
                 display: none;
             }
@@ -726,15 +786,6 @@
                 display: none;
             }
 
-            .mobile-subscribe {
-                display: block; margin-top: 16px;
-                padding-top: 16px; border-top: 1px solid var(--rule);
-            }
-            .mobile-subscribe-row { display: flex; gap: 10px; }
-            .mobile-subscribe-row .subscribe-input { flex: 1; min-width: 0; }
-            .mobile-subscribe-row .subscribe-button {
-                margin-top: 0; width: auto; white-space: nowrap; padding: 10px 18px;
-            }
         }
 
         @media (max-width: 600px) {
@@ -793,7 +844,7 @@
             .mobile-about,
             .margin-note,
             .subscribe-card,
-            .mobile-subscribe {
+            .subscribe-overlay {
                 display: none !important;
             }
 
@@ -867,7 +918,7 @@
                     <p>If you wonder about things and want to learn, you are welcome here.</p>
                 </div>
             </div>
-            <div class="sidebar-card subscribe-card">
+            <div class="sidebar-card subscribe-card" id="subscribeCard">
                 <h3 class="sidebar-title">Subscribe</h3>
                 <div class="sidebar-text"><p>Receive new entries by email.</p></div>
                 <form action="https://script.google.com/macros/s/AKfycbxys2VXQn-OXvE4YMcAdpMfPL3hd1VUKmz6KddfXzQ4AHa_VElxuPURkKWwaZ9wYqEc/exec" method="POST" class="subscribe-form">
@@ -896,7 +947,7 @@
                             <p>If you wonder about things and want to learn, you are welcome here.</p>
                         </div>
                     </div>
-                    <div class="mobile-subscribe">
+                    <div class="mobile-subscribe" id="mobileSubscribeCard">
                         <form action="https://script.google.com/macros/s/AKfycbxys2VXQn-OXvE4YMcAdpMfPL3hd1VUKmz6KddfXzQ4AHa_VElxuPURkKWwaZ9wYqEc/exec" method="POST" class="subscribe-form">
                             <div class="mobile-subscribe-row">
                                 <input type="email" name="Email" placeholder="your@email.com"
@@ -971,6 +1022,21 @@
                     <div class="reading-indicator-bar" id="indicatorBar"></div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Subscribe popup -->
+    <div class="subscribe-overlay" id="subscribeOverlay">
+        <div class="subscribe-popup">
+            <button class="subscribe-popup-close" id="subscribeClose" aria-label="Close">&times;</button>
+            <div class="subscribe-popup-title">Subscribe</div>
+            <p class="subscribe-popup-text">Receive new entries by email.</p>
+            <form action="https://script.google.com/macros/s/AKfycbxys2VXQn-OXvE4YMcAdpMfPL3hd1VUKmz6KddfXzQ4AHa_VElxuPURkKWwaZ9wYqEc/exec" method="POST" class="subscribe-form">
+                <input type="email" name="Email" placeholder="your@email.com"
+                       required class="subscribe-input" aria-label="Email address">
+                <button type="submit" class="subscribe-button">Subscribe</button>
+                <div class="subscribe-status" aria-live="polite"></div>
+            </form>
         </div>
     </div>
 
@@ -1223,18 +1289,60 @@
                 .catch(function() { /* fail silently */ });
         }
 
-        // ── Subscribe form ──
-        function initSubscribeForms() {
-            document.querySelectorAll('.subscribe-form').forEach(function(form) {
+        // ── Subscribe ──
+        function initSubscribe() {
+            var overlay = document.getElementById('subscribeOverlay');
+            var closeBtn = document.getElementById('subscribeClose');
+            var sidebarCard = document.getElementById('subscribeCard');
+            var mobileCard = document.getElementById('mobileSubscribeCard');
+            var allForms = document.querySelectorAll('.subscribe-form');
+            var subscribed = localStorage.getItem('subscribed');
+
+            // If already subscribed, hide sidebar/mobile cards, never show popup
+            if (subscribed) {
+                if (sidebarCard) sidebarCard.style.display = 'none';
+                if (mobileCard) mobileCard.style.display = 'none';
+                return;
+            }
+
+            // Show popup after 15 seconds
+            setTimeout(function() {
+                if (!localStorage.getItem('subscribed')) {
+                    overlay.classList.add('visible');
+                }
+            }, 15000);
+
+            // Close popup helper
+            function closePopup() {
+                overlay.classList.remove('visible');
+                overlay.classList.add('hiding');
+                setTimeout(function() {
+                    overlay.classList.remove('hiding');
+                }, 800);
+            }
+
+            // Close on X
+            closeBtn.addEventListener('click', closePopup);
+
+            // Close on overlay background click
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) closePopup();
+            });
+
+            // Close on Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && overlay.classList.contains('visible')) closePopup();
+            });
+
+            // Handle submit on ALL forms (sidebar, mobile, popup)
+            allForms.forEach(function(form) {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     var input = form.querySelector('.subscribe-input');
-                    var button = form.querySelector('.subscribe-button');
                     var status = form.querySelector('.subscribe-status');
                     if (!input.value.trim()) return;
                     status.textContent = '';
                     status.className = 'subscribe-status';
-                    // Use hidden iframe to handle Google's redirect
                     var iframe = document.createElement('iframe');
                     iframe.name = 'subscribe-frame';
                     iframe.style.display = 'none';
@@ -1244,13 +1352,24 @@
                         setTimeout(function() { iframe.remove(); }, 1000);
                     });
                     form.submit();
-                    // Show success immediately — the data is already sent
                     input.value = '';
                     status.textContent = 'Thank you for subscribing.';
-                    // Stop the shine on all subscribe cards
-                    document.querySelectorAll('.subscribe-card').forEach(function(c) {
-                        c.classList.add('clicked');
-                    });
+                    localStorage.setItem('subscribed', '1');
+                    // Close popup if open
+                    if (overlay.classList.contains('visible')) {
+                        setTimeout(closePopup, 1500);
+                    }
+                    // Fade out sidebar and mobile cards
+                    setTimeout(function() {
+                        [sidebarCard, mobileCard].forEach(function(c) {
+                            if (!c) return;
+                            c.style.transition = 'opacity 1.2s ease';
+                            c.style.opacity = '0';
+                            c.addEventListener('transitionend', function() {
+                                c.style.display = 'none';
+                            }, { once: true });
+                        });
+                    }, 2000);
                 });
             });
         }
@@ -1263,7 +1382,7 @@
             initShareableLinks();
             updateReadingIndicator();
             loadVisitorCount();
-            initSubscribeForms();
+            initSubscribe();
         });
         window.addEventListener('resize', positionMarginNotes);
         window.addEventListener('scroll', () => {
